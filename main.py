@@ -37,6 +37,7 @@ def command_start(m):
     cid = m.chat.id
     if not r.exists(cid):  # if user hasn't used the "/start" command yet:
         r.set(cid, 0)  # save user id and state
+        r.set(cid+"_counter", 0)
         bot.send_message(cid, f"Hello, {m.chat.first_name}, lets start")
         bot.send_message(cid, "Scanning complete, I know you now")
         command_help(m)  # show the new user the help page
