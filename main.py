@@ -39,7 +39,6 @@ def command_start(m):
             pattern="*"):  # if user hasn't used the "/start" command yet:
         r.set(cid,
               0)  # save user id, so you could brodcast messages to all users of this bot later
-        r.bgsave()
         bot.send_message(cid, f"Hello, {m.chat.first_name}, lets start")
         bot.send_message(cid, "Scanning complete, I know you now")
         command_help(m)  # show the new user the help page
