@@ -58,6 +58,7 @@ def command_help(m):
         help_text += "/" + key + ": "
         help_text += commands[key] + "\n"
     bot.send_message(cid, help_text)  # send the generated help page
+    bot.reply_to(m, 'hello')
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
