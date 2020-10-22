@@ -68,19 +68,18 @@ def command_default(m):
                      "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
 
 
-@server.route('/' + TOKEN, methods=['POST'])
+@server.route('/bot', methods=['POST'])
 def getMessage():
     bot.process_new_updates(
-        [types.Update.de_json(request.stream.read().decode("utf-8"))])
+        [telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
 
 
 @server.route('/')
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url="https://stick2placebot.herokuapp.com/" + TOKEN)
+    bot.set_webhook(url="https://stick2placebot.herokuapp.com/bot")
     return "!", 200
 
 
-if __name__ == "__main__":
-    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
