@@ -35,7 +35,6 @@ bot.set_update_listener(listener)
 @bot.message_handler(commands=['start'])
 def command_start(m):
     cid = m.chat.id
-    print(r.exists(cid))
     if not r.exists(cid):  # if user hasn't used the "/start" command yet:
         r.set(cid, 0)  # save user id and state
         bot.send_message(cid, f"Hello, {m.chat.first_name}, lets start")
