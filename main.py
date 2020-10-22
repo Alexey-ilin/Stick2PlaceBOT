@@ -34,11 +34,12 @@ bot.set_update_listener(listener)
 # handle the "/start" command
 @bot.message_handler(commands=['start'])
 def command_start(m):
+    print(r.keys())
     cid = m.chat.id
     if cid not in r.keys(
             pattern="*"):  # if user hasn't used the "/start" command yet:
         r.set(cid,
-              0)  # save user id, so you could brodcast messages to all users of this bot later
+              0)  # save user id and state
         bot.send_message(cid, f"Hello, {m.chat.first_name}, lets start")
         bot.send_message(cid, "Scanning complete, I know you now")
         command_help(m)  # show the new user the help page
