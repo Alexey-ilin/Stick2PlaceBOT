@@ -95,7 +95,8 @@ def command_add(m):
     try:
         bot.register_next_step_handler(m, process_description_step, pipe=pipe)
     except Exception as exc:
-        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        bot.send_message(cid, "Oops, something went wrong.")
+        bot.send_message(cid, "Please, try again")
         pipe.reset()
 
 
@@ -110,7 +111,8 @@ def process_description_step(m, pipe):
         bot.send_message(cid, 'Ok, please send the location of it')
         bot.register_next_step_handler(m, process_location_step, pipe=pipe)
     except Exception as exc:
-        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        bot.send_message(cid, "Oops, something went wrong.")
+        bot.send_message(cid, "Please, try again")
         pipe.reset()
 
 
@@ -127,7 +129,8 @@ def process_location_step(m, pipe):
         bot.send_message(cid, 'Good, please send the photo of your place')
         bot.register_next_step_handler(m, process_photo_step, pipe=pipe)
     except Exception as exc:
-        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        bot.send_message(cid, "Oops, something went wrong.")
+        bot.send_message(cid, "Please, try again")
         pipe.reset()
 
 
@@ -141,9 +144,10 @@ def process_photo_step(m, pipe):
         photo = m.photo[-1].file_id
         pipe.lpush(str(cid) + ":locations", photo)
         pipe.execute()
-        bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
+        bot.send_message(cid, "Success. Your location is saved")
     except Exception as exc:
-        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        bot.send_message(cid, "Oops, something went wrong.")
+        bot.send_message(cid, "Please, try again")
         pipe.reset()
 
 
@@ -161,6 +165,7 @@ def command_reset(m):
 def command_list(m):
     try:
         cid = m.chat.id
+        num_locations = r.llen(str(cid) + ':locations') // 4
         bot.send_message(cid, f"You have {r.llen(str(cid) + ':locations')} saved locations")
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong.")
