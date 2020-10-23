@@ -6,7 +6,9 @@ import redis
 
 from flask import Flask, request
 
-TOKEN = "1373309629:AAE5X1NvcdzycQVv8XyIPxPsFGmPHasFUYw"
+import time
+
+TOKEN = os.environ.get("TOKEN")
 r = redis.from_url(os.environ.get("REDIS_URL"))
 server = Flask(__name__)
 
@@ -17,6 +19,26 @@ commands = {  # command description used in the "help" command
     'list': 'Gives your last ten locations',
     'reset': 'Clear all your locations',
 }
+
+
+def save_new_user(uid):
+    with r.pipeline() as pipe:
+        pipe.rpush(str(uid), 0)  # save user step
+        pipe.rpush(str(uid), 0)  # save user locations counter
+        # user_id: [state, counter]
+        pipe.execute()
+
+
+def get_user_step(uid):
+    if r.exists(uid):
+        return r.get(uid, 0)
+    else:
+        bot.send_message(uid,
+                         "Seems like you dont use \"/start\" yet. So I`m gonna save you first of all...")
+        save_new_user(uid)
+        bot.send_chat_action(uid, 'saving')
+        time.sleep(3)
+        bot.send_message(uid, "Ok, lets continue")
 
 
 def listener(messages):
@@ -39,8 +61,7 @@ bot.set_update_listener(listener)
 def command_start(m):
     cid = m.chat.id
     if not r.exists(cid):  # if user hasn't used the "/start" command yet:
-        r.set(str(cid), 0)  # save user id and state
-        r.set(str(cid) + "_counter", 0)
+        save_new_user(cid)
         bot.send_message(cid, f"Hello, {m.chat.first_name}, lets start")
         bot.send_message(cid, "Scanning complete, I know you now")
         command_help(m)  # show the new user the help page
@@ -58,6 +79,65 @@ def command_help(m):
         help_text += "/" + key + ": "
         help_text += commands[key] + "\n"
     bot.send_message(cid, help_text)  # send the generated help page
+
+
+# add page
+@bot.message_handler(commands=['add'])
+def command_add(m):
+    pipe = r.pipeline()
+    cid = m.chat.id
+    bot.send_message(cid,
+                     "To add your place first of all send me the brief description")
+    try:
+        bot.register_next_step_handler(m, process_description_step, pipe=pipe)
+    except Exception as exc:
+        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        pipe.reset()
+
+
+# next step of adding your place - description of it
+def process_description_step(m, pipe):
+    try:
+        cid = m.chat.id
+        if m.content_type != 'text':
+            raise Exception()
+        description = m.text
+        pipe.lpush(str(cid) + ":locations", description)
+        bot.send_message(cid, 'Ok, please send the location of it')
+        bot.register_next_step_handler(m, process_location_step, pipe=pipe)
+    except Exception as exc:
+        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        pipe.reset()
+
+
+def process_location_step(m, pipe):
+    try:
+        cid = m.chat.id
+        if m.content_type != 'location':
+            raise Exception()
+        latitude = m.location.latitude
+        longitude = m.location.longitude
+        pipe.lpush(str(cid) + ":locations", longitude)
+        pipe.lpush(str(cid) + ":locations", latitude)
+        bot.send_message(cid, 'Ok, please send the location of it')
+        bot.register_next_step_handler(m, process_photo_step, pipe=pipe)
+    except Exception as exc:
+        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        pipe.reset()
+
+
+def process_photo_step(m, pipe):
+    try:
+        cid = m.chat.id
+        if m.content_type != 'photo':
+            raise Exception()
+        photo = m.photo
+        pipe.lpush(str(cid) + ":locations", photo)
+        bot.send_message(cid, f"TEST: Pipeline stack is {pipe.command_stack}")
+    except Exception as exc:
+        bot.send_message(cid, "Oops, something went wrong. Please, try again")
+        pipe.reset()
+    bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
