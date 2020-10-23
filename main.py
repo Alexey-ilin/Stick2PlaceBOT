@@ -119,7 +119,7 @@ def process_location_step(m, pipe):
         longitude = m.location.longitude
         pipe.lpush(str(cid) + ":locations", longitude)
         pipe.lpush(str(cid) + ":locations", latitude)
-        bot.send_message(cid, 'Ok, please send the location of it')
+        bot.send_message(cid, 'Good, please send the photo of your place')
         bot.register_next_step_handler(m, process_photo_step, pipe=pipe)
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong. Please, try again")
@@ -131,7 +131,7 @@ def process_photo_step(m, pipe):
         cid = m.chat.id
         if m.content_type != 'photo':
             raise Exception()
-        photo = m.photo
+        photo = m.photo["file_id"]
         pipe.lpush(str(cid) + ":locations", photo)
         bot.send_message(cid, photo)
         bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
