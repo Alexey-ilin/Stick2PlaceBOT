@@ -166,7 +166,7 @@ def command_list(m):
     try:
         cid = m.chat.id
         num_locations = r.llen(str(cid) + ':locations') // 4
-        bot.send_message(cid, f"You have {r.llen(str(cid) + ':locations')} saved locations")
+        bot.send_message(cid, f"You have {num_locations} saved locations")
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong.")
         bot.send_message(cid, "Please, try again")
