@@ -135,6 +135,7 @@ def process_photo_step(m, pipe):
         photo = m.photo[-1].file_id
         pipe.lpush(str(cid) + ":locations", photo)
         bot.send_message(cid, photo)
+        bot.send_photo(cid, photo)
         bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong. Please, try again")
