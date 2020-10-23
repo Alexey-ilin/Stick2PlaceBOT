@@ -24,7 +24,6 @@ commands = {  # command description used in the "help" command
 def save_new_user(uid):
     with r.pipeline() as pipe:
         pipe.rpush(str(uid), 0)  # save user step
-        pipe.rpush(str(uid), 0)  # save user locations counter
         # user_id: [state, counter]
         pipe.execute()
 
@@ -50,6 +49,11 @@ def listener(messages):
             # print the sent message to the console
             print(str(m.chat.first_name) + " [" + str(
                 m.chat.id) + "]: " + m.text)
+
+
+def list_gen_markup(uid):
+    markup = types.InlineKeyboardMarkup()
+    markup.ro
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -95,7 +99,7 @@ def command_add(m):
         pipe.reset()
 
 
-# next step of adding your place - description of it
+# 2nd step of adding your place - description of it
 def process_description_step(m, pipe):
     try:
         cid = m.chat.id
@@ -110,6 +114,7 @@ def process_description_step(m, pipe):
         pipe.reset()
 
 
+# 3rd step - adding location
 def process_location_step(m, pipe):
     try:
         cid = m.chat.id
@@ -126,6 +131,7 @@ def process_location_step(m, pipe):
         pipe.reset()
 
 
+# the last step - adding photo
 def process_photo_step(m, pipe):
     try:
         cid = m.chat.id
@@ -134,14 +140,31 @@ def process_photo_step(m, pipe):
         print(m.photo)
         photo = m.photo[-1].file_id
         pipe.lpush(str(cid) + ":locations", photo)
-        bot.send_message(cid, photo)
-        bot.send_photo(cid, photo)
+        pipe.execute()
         bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong. Please, try again")
         pipe.reset()
 
 
+@bot.message_handler(commands=['reset'])
+def command_reset(m):
+    try:
+        cid = m.chat.id
+        r.delete(str(cid) + ":locations")
+    except Exception as exc:
+        bot.send_message(cid, "Oops, something went wrong.")
+        bot.send_message(cid, "Please, try again")
+
+
+@bot.message_handler(commands=['list'])
+def command_list(m):
+    try:
+        cid = m.chat.id
+        bot.send_message(cid, f"You have {r.llen(str(cid) + ':locations')} saved locations")
+    except Exception as exc:
+        bot.send_message(cid, "Oops, something went wrong.")
+        bot.send_message(cid, "Please, try again")
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def command_default(m):
