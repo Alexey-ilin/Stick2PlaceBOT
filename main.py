@@ -133,11 +133,12 @@ def process_photo_step(m, pipe):
             raise Exception()
         photo = m.photo
         pipe.lpush(str(cid) + ":locations", photo)
-        bot.send_message(cid, f"TEST: Pipeline stack is {pipe.command_stack}")
+        bot.send_message(cid, photo)
+        bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong. Please, try again")
         pipe.reset()
-    bot.send_message(cid, "Success. Your location is saved (NOT XD TEST)")
+
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
