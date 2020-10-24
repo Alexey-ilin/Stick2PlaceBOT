@@ -52,13 +52,12 @@ def listener(messages):
 
 
 def list_gen_markup(uid):
-    markup = types.InlineKeyboardMarkup()
-    markup.row_width = 1
-    buttons = [types.InlineKeyboardButton(text="Hello", callback_data="Hello"),
-               types.InlineKeyboardButton(text="Home", callback_data="Home"),
-               types.InlineKeyboardButton(text="Work", callback_data="Work")]
-    for button in buttons:
-        markup.add(button)
+    buttons = [
+        [types.InlineKeyboardButton(text="Hello", callback_data="Hello")],
+        [types.InlineKeyboardButton(text="Home", callback_data="Home")],
+        [types.InlineKeyboardButton(text="Work", callback_data="Work")]
+    ]
+    markup = types.InlineKeyboardMarkup(buttons)
     return markup
 
 
@@ -174,9 +173,11 @@ def command_list(m):
         num_locations = r.llen(str(cid) + ':locations') // 4
         bot.send_message(cid, f"You have {num_locations} saved locations")
         if num_locations > 10:
-            bot.send_message(cid, "Here is the last ten", reply_markup=list_gen_markup(cid))
+            bot.send_message(cid, "Here is the last ten",
+                             reply_markup=list_gen_markup(cid))
         else:
-            bot.send_message(cid, "Here they are", reply_markup=list_gen_markup(cid))
+            bot.send_message(cid, "Here they are",
+                             reply_markup=list_gen_markup(cid))
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong.")
         bot.send_message(cid, "Please, try again")
