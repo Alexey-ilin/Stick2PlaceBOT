@@ -194,6 +194,8 @@ def command_reset(m):
 def command_list(m):
     cid = m.chat.id
     num_locations = r.llen(str(cid) + ':locations') // 4
+    if num_locations == 0:
+        bot.send_message(cid, "Seems like you have no saved locations yet")
     bot.send_message(cid,
                      f"You have {num_locations} saved locations. Here they are",
                      reply_markup=list_gen_markup(cid))
