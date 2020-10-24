@@ -53,7 +53,11 @@ def listener(messages):
 
 def list_gen_markup(uid):
     markup = types.InlineKeyboardMarkup()
-    markup.ro
+    buttons = [types.InlineKeyboardButton(text="Hello", callback_data="Hello"),
+               types.InlineKeyboardButton(text="Home", callback_data="Home"),
+               types.InlineKeyboardButton(text="Work", callback_data="Work")]
+    markup.add(*buttons, 1)
+    return markup
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -167,9 +171,12 @@ def command_list(m):
         cid = m.chat.id
         num_locations = r.llen(str(cid) + ':locations') // 4
         bot.send_message(cid, f"You have {num_locations} saved locations")
+        if num_locations > 10:
+            bot.send_message(cid, "Here is the last ten", reply_markup=list_gen_markup(cid))
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong.")
         bot.send_message(cid, "Please, try again")
+
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def command_default(m):
