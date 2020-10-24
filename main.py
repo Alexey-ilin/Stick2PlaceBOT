@@ -178,6 +178,7 @@ def process_photo_step(m, pipe):
         pipe.reset()
 
 
+# reset page
 @bot.message_handler(commands=['reset'])
 def command_reset(m):
     try:
@@ -188,6 +189,7 @@ def command_reset(m):
         bot.send_message(cid, "Please, try again")
 
 
+# list page
 @bot.message_handler(commands=['list'])
 def command_list(m):
     cid = m.chat.id
@@ -197,6 +199,7 @@ def command_list(m):
                      reply_markup=list_gen_markup(cid))
 
 
+# handling location buttons
 @bot.callback_query_handler(func=lambda call: True)
 def location_button_process(call):
     cid = call.message.chat.id
@@ -207,6 +210,7 @@ def location_button_process(call):
                               longitude=location['longitude'])
             bot.send_photo(cid, photo=location['photo_id'],
                            caption=location['description'])
+            break
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
@@ -216,6 +220,7 @@ def command_default(m):
                      "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
 
 
+# server
 @server.route('/bot', methods=['POST'])
 def getMessage():
     bot.process_new_updates(
