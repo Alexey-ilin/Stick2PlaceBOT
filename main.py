@@ -54,16 +54,22 @@ def listener(messages):
 def list_gen_markup(uid):
     locations = _get_last_ten_locations(uid)
     markup = types.InlineKeyboardMarkup(1)
-    buttons = [types.InlineKeyboardButton(text="Hello", callback_data="Hello"),
-               types.InlineKeyboardButton(text="Home", callback_data="Home"),
-               types.InlineKeyboardButton(text="Work", callback_data="Work")
-               ]
+    buttons = list()
+    for location in locations:
+        buttons.append(types.InlineKeyboardButton(text=location['description'],
+                                                  callback_data=location[
+                                                      'description']))
     for i in range(len(buttons)):
         markup.add(buttons[i])
     return markup
 
 
 def _get_last_ten_locations(cid):
+    """
+    Returns last 10 user locations in form [{"photo_id": photo_id,
+    "latitude": latitude, "longitude": longitude, "description": description},
+    etc]
+    """
     locations = []
     temp_locations = r.lrange(str(cid) + ":locations", 0, 39)
     for i in range(0, len(temp_locations) - 1, 4):
@@ -74,7 +80,6 @@ def _get_last_ten_locations(cid):
              'description': temp_locations[i + 3]
              }
         )
-    print(locations)
     return locations
 
 
