@@ -172,13 +172,8 @@ def command_list(m):
     try:
         cid = m.chat.id
         num_locations = r.llen(str(cid) + ':locations') // 4
-        bot.send_message(cid, f"You have {num_locations} saved locations")
-        if num_locations > 10:
-            bot.send_message(cid, "Here is the last ten",
-                             reply_markup=list_gen_markup(cid))
-        else:
-            bot.send_message(cid, "Here they are",
-                             reply_markup=list_gen_markup(cid))
+        bot.send_message(cid, f"You have {num_locations} saved locations. Here they are", reply_markup=list_gen_markup(cid))
+
     except Exception as exc:
         bot.send_message(cid, "Oops, something went wrong.")
         bot.send_message(cid, "Please, try again")
