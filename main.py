@@ -74,10 +74,10 @@ def _get_last_ten_locations(cid):
     temp_locations = r.lrange(str(cid) + ":locations", 0, 39)
     for i in range(0, len(temp_locations) - 1, 4):
         locations.append(
-            {'photo_id': temp_locations[i],
-             'latitude': temp_locations[i + 1],
-             'longitude': temp_locations[i + 2],
-             'description': temp_locations[i + 3]
+            {'photo_id': temp_locations[i].decode('utf-8'),
+             'latitude': temp_locations[i + 1].decode('utf-8'),
+             'longitude': temp_locations[i + 2].decode('utf-8'),
+             'description': temp_locations[i + 3].decode('utf-8'),
              }
         )
     return locations
