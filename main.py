@@ -57,7 +57,8 @@ def list_gen_markup(uid):
         [types.InlineKeyboardButton(text="Home", callback_data="Home")],
         [types.InlineKeyboardButton(text="Work", callback_data="Work")]
     ]
-    markup = types.InlineKeyboardMarkup(buttons)
+    markup = types.InlineKeyboardMarkup()
+    markup.add(buttons)
     return markup
 
 
