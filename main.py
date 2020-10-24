@@ -53,8 +53,11 @@ def listener(messages):
 
 def list_gen_markup(uid):
     markup = types.InlineKeyboardMarkup()
-    button = types.InlineKeyboardButton(text="Hello", callback_data="Hello")
-    markup.add(button)
+    buttons = [types.InlineKeyboardButton(text="Hello", callback_data="Hello"),
+               types.InlineKeyboardButton(text="Home", callback_data="Home"),
+               types.InlineKeyboardButton(text="Work", callback_data="Work")]
+    for button in buttons:
+        markup.row(button)
     return markup
 
 
