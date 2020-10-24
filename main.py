@@ -197,6 +197,18 @@ def command_list(m):
                      reply_markup=list_gen_markup(cid))
 
 
+@bot.callback_query_handler(func=lambda call: True)
+def location_button_process(call):
+    cid = call.message.chat.id
+    locations = _get_last_ten_locations(cid)
+    for location in locations:
+        if location['description'] == call.data:
+            bot.send_location(cid, latitude=location['latitude'],
+                              longitude=location['longitude'])
+            bot.send_photo(cid, photo=location['photo_id'],
+                           caption=location['description'])
+
+
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def command_default(m):
     # this is the standard reply to a normal message
