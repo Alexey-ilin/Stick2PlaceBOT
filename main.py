@@ -190,16 +190,11 @@ def command_reset(m):
 
 @bot.message_handler(commands=['list'])
 def command_list(m):
-    try:
-        cid = m.chat.id
-        num_locations = r.llen(str(cid) + ':locations') // 4
-        bot.send_message(cid,
-                         f"You have {num_locations} saved locations. Here they are",
-                         reply_markup=list_gen_markup(cid))
-
-    except Exception as exc:
-        bot.send_message(cid, "Oops, something went wrong.")
-        bot.send_message(cid, "Please, try again")
+    cid = m.chat.id
+    num_locations = r.llen(str(cid) + ':locations') // 4
+    bot.send_message(cid,
+                     f"You have {num_locations} saved locations. Here they are",
+                     reply_markup=list_gen_markup(cid))
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
